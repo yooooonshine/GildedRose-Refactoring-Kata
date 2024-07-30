@@ -2,6 +2,8 @@ package com.gildedrose;
 
 import static com.gildedrose.ItemName.*;
 
+import java.util.Arrays;
+
 class GildedRose {
 
     Item[] items;
@@ -39,9 +41,7 @@ class GildedRose {
                 }
             }
 
-            if (!items[i].name.equals(SULFURAS.name())) {
-                items[i].sellIn = items[i].sellIn - 1;
-            }
+            updateItemSellIn();
 
             if (items[i].sellIn < 0) {
                 if (!items[i].name.equals(AGED_BRIE.name())) {
@@ -63,10 +63,14 @@ class GildedRose {
         }
     }
 
-    // public void updateSellIn() {
-    // }
-    //
-    // public void updateQuality() {
+    //아이템 판매기간 변경
+    private void updateItemSellIn() {
+        Arrays.stream(items)
+            .filter(item -> item.name.equals(SULFURAS.name()))
+            .forEach(item -> item.sellIn--);
+    }
+
+    // public void updateItemQuality() {
     //
     // }
 }
