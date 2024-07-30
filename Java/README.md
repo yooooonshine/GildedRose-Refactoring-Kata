@@ -4,17 +4,19 @@
 * [] 하루가 지날때마다, 시스템은 두 값(SellIn, Quality)을 1 씩 감소시킵니다.
 
 * [] 판매하는 나머지 일수가 없어지면, Quality 값은 2배로 떨어집니다.
-* [] Quality 값은 결코 음수가 되지는 않습니다.
+* [] Quality 값은 0 <= x <= 50이다.
 * [] "Aged Brie"(오래된 브리치즈)은(는) 시간이 지날수록 Quality 값이 올라갑니다.
-* [] Quality 값은 50를 초과 할 수 없습니다.
 * Sulfuras는 quality, sellin 불변, quality 값은 80
   * [] quality 불변
   * [] sellin 불변
   * [] quality 80
-* [] "Backstage passes(백스테이지 입장권)"는 "Aged Brie"와 유사하게 SellIn 값에 가까워 질수록 Quality 값이 상승하고, 10일 부터는 매일 2 씩 증가하다, 5일 부터는이 되면 매일 3 씩 증가하지만, 콘서트 종료 후에는 0으로 떨어집니다.
-
+* "Backstage passes(백스테이지 입장권)"는 "Aged Brie"와 유사하게 SellIn 값에 가까워 질수록 Quality 값이 상승하고, 10일 부터는 매일 2 씩 증가하다, 5일 부터는이 되면 매일 3 씩 증가하지만, 콘서트 종료 후에는 0으로 떨어집니다.
+  * case1. sellIn >= 0
+    * [] sellIn이 10일부터는 Quality 2씩 증가
+    * [] sellIn이 5일부터는 Quality 3씩 증가
+  * case2. sellin < 0
+    * [] Quality = 0
 # 시스템 업데이트 요구 사항
 
 * [] "Conjured" 아이템은 일반 아이템의 2배의 속도로 품질(Quality)이 저하됩니다.
 * [] Item 클래스와 Items 속성은 변경하지 마세요.(UpdateQuality() 메서드와 Items 속성을 정적(static)으로 만드는 것은 괜찮습니다. 저희가 책임질게요.)
-* [] 아이템의 Quality는 50 이상으로 증가할 수는 없습니다.
