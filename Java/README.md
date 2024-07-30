@@ -1,30 +1,20 @@
-# Gilded Rose starting position in Java
+# 요구 사항
+* [] 모든 아이템은 SellIn 값을 가지며, 이는 아이템을 판매해야하는 (남은) 기간을 나태냅니다.
+* [] 모든 아이템은 Quality 값을 가지며, 이것은 아이템의 가치를 나타냅니다.
+* [] 하루가 지날때마다, 시스템은 두 값(SellIn, Quality)을 1 씩 감소시킵니다.
 
-## Run the TextTest Fixture from Command-Line
+* [] 판매하는 나머지 일수가 없어지면, Quality 값은 2배로 떨어집니다.
+* [] Quality 값은 결코 음수가 되지는 않습니다.
+* [] "Aged Brie"(오래된 브리치즈)은(는) 시간이 지날수록 Quality 값이 올라갑니다.
+* [] Quality 값은 50를 초과 할 수 없습니다.
+* Sulfuras는 quality, sellin 불변, quality 값은 80
+  * [] quality 불변
+  * [] sellin 불변
+  * [] quality 80
+* [] "Backstage passes(백스테이지 입장권)"는 "Aged Brie"와 유사하게 SellIn 값에 가까워 질수록 Quality 값이 상승하고, 10일 부터는 매일 2 씩 증가하다, 5일 부터는이 되면 매일 3 씩 증가하지만, 콘서트 종료 후에는 0으로 떨어집니다.
 
-```
-./gradlew -q text
-```
+# 시스템 업데이트 요구 사항
 
-### Specify Number of Days
-
-For e.g. 10 days:
-
-```
-./gradlew -q text --args 10
-```
-
-You should make sure the gradle commands shown above work when you execute them in a terminal before trying to use TextTest (see below).
-
-
-## Run the TextTest approval test that comes with this project
-
-There are instructions in the [TextTest Readme](../texttests/README.md) for setting up TextTest. What's unusual for the Java version is there are two executables listed in [config.gr](../texttests/config.gr) for Java. The first uses Gradle wrapped in a python script. Uncomment these lines to use it:
-
-    executable:${TEXTTEST_HOME}/Java/texttest_rig.py
-    interpreter:python
-
-The other relies on your CLASSPATH being set correctly in [environment.gr](../texttests/environment.gr). Uncomment these lines to use it instead:
-
-    executable:com.gildedrose.TexttestFixture
-    interpreter:java
+* [] "Conjured" 아이템은 일반 아이템의 2배의 속도로 품질(Quality)이 저하됩니다.
+* [] Item 클래스와 Items 속성은 변경하지 마세요.(UpdateQuality() 메서드와 Items 속성을 정적(static)으로 만드는 것은 괜찮습니다. 저희가 책임질게요.)
+* [] 아이템의 Quality는 50 이상으로 증가할 수는 없습니다.
