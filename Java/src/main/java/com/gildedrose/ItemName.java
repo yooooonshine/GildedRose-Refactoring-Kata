@@ -7,9 +7,13 @@ public enum ItemName {
     SULFURAS("Sulfuras, Hand of Ragnaros")
     ;
 
-    private String value;
+    private final String value;
 
     ItemName(String value) {
         this.value = value;
+    }
+
+    public String getValue() {
+        return value;
     }
 }

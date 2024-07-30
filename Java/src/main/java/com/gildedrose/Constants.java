@@ -9,8 +9,11 @@ public class Constants {
     public static int NORMAL_ITEM_MAX_QUALITY = 50;
     public static int NORMAL_ITEM_MIN_QUALITY = 0;
     public static int NORMAL_ITEM_DECREASE_AMOUNT = 1;
+    public static int NORMAL_ITEM_DECREASE_RATE_AFTER_SELL_IN_STANDARD = 2;
 
     //Backstage passes
+    public static int BACKSTAGE_PASSES_INCREASE_AMOUNT = 1;
+    public static int BACKSTAGE_PASSES_NORMAL_RATE = 1;
     public static int BACKSTAGE_PASSES_SELL_IN_STANDARD_INCREASING_3_TIMES = 10;
     public static int BACKSTAGE_PASSES_INCREASE_3_TIMES = 3;
     public static int BACKSTAGE_PASSES_SELL_IN_STANDARD_INCREASING_2_TIMES = 5;

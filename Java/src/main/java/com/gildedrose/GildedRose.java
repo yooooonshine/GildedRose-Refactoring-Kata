@@ -4,6 +4,7 @@ import static com.gildedrose.Constants.*;
 import static com.gildedrose.ItemName.*;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 class GildedRose {
 
@@ -14,77 +15,141 @@ class GildedRose {
     }
 
     public void updateQuality() {
-        for (int i = 0; i < items.length; i++) {
+        Arrays.stream(items)
+                .forEach(item -> {
+                    updateItemSellIn(item);
+                    updateItemQuality(item);
+                });
 
-            // 기본적으로 떨어지는 사항
-            // 일반, 감염, 전설
-            if (!items[i].name.equals(AGED_BRIE.name()) && !items[i].name.equals(BACKSTAGE_PASSES.name())) {
-                // 일반, 감염
-                if (items[i].quality > Constants.NORMAL_ITEM_MIN_QUALITY) {
-                    if (!items[i].name.equals(SULFURAS.name())) {
-                        items[i].quality = items[i].quality - NORMAL_ITEM_DECREASE_AMOUNT;
-                    }
-                }
-            // 오래된 브리치즈 및 백스테이지 패스
-            } else {
-                if (items[i].quality < NORMAL_ITEM_MAX_QUALITY) {
-                    items[i].quality = items[i].quality + 1;
+    }
 
-                    //백스테이지 패스 퀄리티 증가
-                    if (items[i].name.equals(BACKSTAGE_PASSES.name())) {
-                        if (items[i].sellIn < Constants.BACKSTAGE_PASSES_SELL_IN_STANDARD_INCREASING_2_TIMES) {
-                            if (items[i].quality < NORMAL_ITEM_MAX_QUALITY) {
-                                items[i].quality = items[i].quality + 1;
-                            }
-                        }
+    // 아이템 판매기간 변경
+    private void updateItemSellIn(Item item) {
 
-                        if (items[i].sellIn < 6) {
-                            if (items[i].quality < 50) {
-                        if (items[i].sellIn < Constants.BACKSTAGE_PASSES_SELL_IN_STANDARD_INCREASING_3_TIMES) {
-                            if (items[i].quality < NORMAL_ITEM_MAX_QUALITY) {
-                                items[i].quality = items[i].quality + 1;
-                            }
-                        }
-                    }
-                }
-            }
+        if (item.name.equals(SULFURAS.getValue())) {
+            return;
+        }
 
-            updateItemSellIn();
+        item.sellIn--;
+    }
 
-            // 판매기간이 지났을 때 2배 떨어지는 기능
-            if (items[i].sellIn < Constants.SELL_IN_STANDARD) {
-
-                // 일반, 감염, 전설
-                if (!items[i].name.equals(AGED_BRIE.name())) {
-                    if (!items[i].name.equals(BACKSTAGE_PASSES.name())) {
-                        if (items[i].quality > Constants.NORMAL_ITEM_MIN_QUALITY) {
-                            if (!items[i].name.equals(SULFURAS.name())) {
-                                items[i].quality = items[i].quality - 1;
-                            }
-                        }
-                    } else {
-                        items[i].quality = items[i].quality - items[i].quality;
-                    }
-                // 오래된 브리치즈
-                } else {
-                    if (items[i].quality < NORMAL_ITEM_MAX_QUALITY) {
-                        items[i].quality = items[i].quality + 1;
-                    }
-                }
-            }
+    // Item 종류에 따라 Quality 업데이트
+    private void updateItemQuality(Item item) {
+        //1.Aged Brie
+        //2.Sulfuras
+        //3.Backstage Passes
+        //4.Conjured
+        //5.그 외
+        if (Objects.equals(item.name, AGED_BRIE.getValue())) {
+            updateAgedBrieQuality(item);
+        } else if (Objects.equals(item.name, SULFURAS.getValue())) {
+            updateSulfurasQuality(item);
+        } else if (Objects.equals(item.name, BACKSTAGE_PASSES.getValue())) {
+            updateBackstagePassesQuality(item);
+        } else if (Objects.equals(item.name, CONJURED.getValue())) {
+            updateConjuredQuality(item);
+        } else {
+            updateNormalItemQuality(item);
         }
     }
 
-    //아이템 판매기간 변경
-    private void updateItemSellIn() {
-        Arrays.stream(items)
-            .filter(item -> item.name.equals(SULFURAS.name()))
-            .forEach(item -> item.sellIn--);
+    //Sulfuras Quality 변경
+    private void updateSulfurasQuality(Item item) {
+        // Sulfurus는 Qualiry에 변경이 없다.
+        return;
     }
 
-    // public void updateItemQuality() {
-    //
-    // }
+    //Aged Brie Quality 변경
+    private void updateAgedBrieQuality(Item item) {
+
+        //판매기간 끝나기 전
+        //판매기간 끝난 후
+        if (!isLessThanSellInStandard(item.sellIn)) {
+            item.quality += AGED_BRIE_INCREASE_AMOUNT;
+        } else {
+           item.quality += AGED_BRIE_INCREASE_AMOUNT * NORMAL_ITEM_DECREASE_RATE_AFTER_SELL_IN_STANDARD;
+        }
+
+        checkAndAdjustQuality(item);
+    }
+
+    //Backstage Passes Quality 변경
+    private void updateBackstagePassesQuality(Item item) {
+
+        //판매기간 끝나기 전
+        //판매기간 끝난 후
+        if (!isLessThanSellInStandard(item.sellIn)) {
+            item.quality += BACKSTAGE_PASSES_INCREASE_AMOUNT * decideBackStagePassesIncreaseRate(item.sellIn);
+
+            checkAndAdjustQuality(item);
+        } else {
+            item.quality = NORMAL_ITEM_MIN_QUALITY;
+        }
+    }
+
+    //BackStage 상승 비율 결정
+    private int decideBackStagePassesIncreaseRate(int sellIn) {
+
+        //1. 판매기간이 2배기간보다 많이 남은 경우
+        //2. 판매기간이 2배기간인 경우
+        //3. 판매기간이 3배기간인 경우
+        //예외
+        if (BACKSTAGE_PASSES_SELL_IN_STANDARD_INCREASING_2_TIMES < sellIn) {
+            return BACKSTAGE_PASSES_NORMAL_RATE;
+        } else if (BACKSTAGE_PASSES_SELL_IN_STANDARD_INCREASING_3_TIMES < sellIn) {
+            return BACKSTAGE_PASSES_INCREASE_2_TIMES;
+        } else if (SELL_IN_STANDARD <= sellIn) {
+            return BACKSTAGE_PASSES_INCREASE_3_TIMES;
+        } else {
+            return -1;
+        }
+    }
+
+    //Conjured Quality 변경
+    private void updateConjuredQuality(Item item) {
+
+        //1. 판매 기간이 만료되지 않았을 때
+        //2. 판매 기간이 만료되었을 때
+        if (!isLessThanSellInStandard(item.sellIn)) {
+            item.quality -= NORMAL_ITEM_DECREASE_AMOUNT * CONJURED_DECREASE_RATE;
+        } else {
+            item.quality -= NORMAL_ITEM_DECREASE_AMOUNT * NORMAL_ITEM_DECREASE_RATE_AFTER_SELL_IN_STANDARD * CONJURED_DECREASE_RATE;
+        }
+
+        checkAndAdjustQuality(item);
+    }
+
+    //일반 아이템 Quality 변경
+    private void updateNormalItemQuality(Item item) {
+
+        //판매 기간이 만료되지 않았을 때
+        //판매 기간이 만료되었을 때
+        if (!isLessThanSellInStandard(item.sellIn)) {
+            item.quality -= NORMAL_ITEM_DECREASE_AMOUNT;
+        } else {
+            item.quality -= NORMAL_ITEM_DECREASE_AMOUNT * NORMAL_ITEM_DECREASE_RATE_AFTER_SELL_IN_STANDARD;
+        }
+
+        checkAndAdjustQuality(item);
+    }
+
+    //판매기간이 끝났는 지
+    private boolean isLessThanSellInStandard(int sellIn) {
+
+        return sellIn < SELL_IN_STANDARD;
+    }
+
+    private void checkAndAdjustQuality(Item item) {
+
+        if (item.quality > NORMAL_ITEM_MAX_QUALITY) {
+            item.quality = NORMAL_ITEM_MAX_QUALITY;
+        }
+
+        if (item.quality < NORMAL_ITEM_MIN_QUALITY) {
+            item.quality = NORMAL_ITEM_MIN_QUALITY;
+        }
+    }
 }
 
 // 품목 별로 변경되도록 리팩토링 하자
+// 떨어진 날을 기준으로 감소한다.
